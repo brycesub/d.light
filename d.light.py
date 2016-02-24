@@ -23,16 +23,28 @@ GPIO.setup(p32,GPIO.OUT)
 GPIO.setup(p64,GPIO.OUT)
 GPIO.setup(p128,GPIO.OUT)
 
-for i in range(32,256):
-  GPIO.output(p1,not i&1)
-  GPIO.output(p2,not i&2)
-  GPIO.output(p4,not i&4)
-  GPIO.output(p8,not i&8)
-  GPIO.output(p16,not i&16)
-  GPIO.output(p32,not i&32)
-  GPIO.output(p64,not i&64)
-  GPIO.output(p128,not i&128)
-  print i,not i&1,not i&2,not i&4,not i&8,not i&16,not i&32,not i&64,not i&128
-  time.sleep(.1)
+try:
+  for i in range(32,256):
+    GPIO.output(p1,not i&1)
+    GPIO.output(p2,not i&2)
+    GPIO.output(p4,not i&4)
+    GPIO.output(p8,not i&8)
+    GPIO.output(p16,not i&16)
+    GPIO.output(p32,not i&32)
+    GPIO.output(p64,not i&64)
+    GPIO.output(p128,not i&128)
+    print i,not i&1,not i&2,not i&4,not i&8,not i&16,not i&32,not i&64,not i&128
+    time.sleep(.1)
 
-GPIO.cleanup()
+  while True:
+    GPIO.output(p1,False)
+    GPIO.output(p2,False)
+    GPIO.output(p4,False)
+    GPIO.output(p8,False)
+    GPIO.output(p16,False)
+    GPIO.output(p32,False)
+    GPIO.output(p64,False)
+    GPIO.output(p128,False)
+
+finally:
+  GPIO.cleanup()
