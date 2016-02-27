@@ -1,11 +1,10 @@
 #!/usr/bin/python
-
+import config
 from multiprocessing import Process, Manager, Event
 
 def light(dummy,state,wake,kill):
   import RPi.GPIO as GPIO
   import time
-  import config
 
   p1 = config.p1
   p2 = config.p2
@@ -29,39 +28,27 @@ def light(dummy,state,wake,kill):
 
   try:
     while True:
-      GPIO.output(p128,True)
-      GPIO.output(p64,True)
-      GPIO.output(p32,True)
-      GPIO.output(p16,True)
-      GPIO.output(p8,True)
-      GPIO.output(p4,True)
-      GPIO.output(p2,True)
-      GPIO.output(p1,True)
+      if state['on'] == True:
+        dim = int(state['dim']/100.*config.dimrange+config.dimlow)
+        GPIO.output(p1,not dim&1)
+        GPIO.output(p2,not dim&2)
+        GPIO.output(p4,not dim&4)
+        GPIO.output(p8,not dim&8)
+        GPIO.output(p16,not dim&16)
+        GPIO.output(p32,not dim&32)
+        GPIO.output(p64,not dim&64)
+        GPIO.output(p128,not dim&128)
+      else:
+        GPIO.output(p1,True)
+        GPIO.output(p2,True)
+        GPIO.output(p4,True)
+        GPIO.output(p8,True)
+        GPIO.output(p16,True)
+        GPIO.output(p32,True)
+        GPIO.output(p64,True)
+        GPIO.output(p128,True)
 
-      while wake.is_set() == False:
-        wake.wait(.1)
-
-      wake.clear()
-
-      for i in range(35,255):
-        GPIO.output(p1,not i&1)
-        GPIO.output(p2,not i&2)
-        GPIO.output(p4,not i&4)
-        GPIO.output(p8,not i&8)
-        GPIO.output(p16,not i&16)
-        GPIO.output(p32,not i&32)
-        GPIO.output(p64,not i&64)
-        GPIO.output(p128,not i&128)
-        print "bright",i
-        kill.wait(state['waketime']*60/(255-35))
-        if kill.is_set() == True:
-          break
-
-      while kill.is_set() == False:
-        kill.wait(.1)
-
-      kill.clear()
-
+      sleep(.1)
   except:
     GPIO.cleanup()
   finally:
@@ -70,7 +57,6 @@ def light(dummy,state,wake,kill):
 def web(dummy,state,wake,kill):
   from bottle import route, run, get, post, request, static_file, abort
   import os
-  import config
 
   wwwroot = os.path.dirname(__file__)+'/www'
 
@@ -78,29 +64,35 @@ def web(dummy,state,wake,kill):
   def docroot():
     return static_file('index.html',wwwroot)
 
-  @route('/<filepath:path>')
-  def servfile(filepath):
-    return static_file(filepath,wwwroot)
-
-  @route('/light')
+  @route('/on')
   def light():
-    wake.set()
+    state['dim'] = 100
+    state['on'] = True
     return dict(state)
 
-  @route('/kill')
-  def killlight():
-    kill.set()
+  @route('/off')
+  def off():
+    state['on'] = False
+    return dict(state)
+
+  @route('/dim/<dimval>')
+  def dim(dimval):
+    state['on'] = True
+    state['dim'] = float(dimval)
     return dict(state)
 
   @route('/stat')
   def stat():
     return dict(state)
 
+  @route('/<filepath:path>')
+  def servfile(filepath):
+    return static_file(filepath,wwwroot)
+
   run(host='0.0.0.0',port=config.wwwport)
 
 if __name__ == '__main__':
   from time import sleep
-  import config
 
   manager = Manager()
   state = manager.dict()
@@ -108,6 +100,8 @@ if __name__ == '__main__':
   wake = Event()
   state['waketime'] = config.waketime
   state['snoozetime'] = config.snoozetime
+  state['on'] = False
+  state['dim'] = 0.
 
   l = Process(target=light,args=(1,state,wake,kill))
   l.daemon = True
