@@ -9,5 +9,5 @@ p128 = 21
 
 wwwport = 80
 
-waketime = 5
-snoozetime = 10
+waketime = .25
+snoozetime = 1.
