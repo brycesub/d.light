@@ -16,12 +16,22 @@
   </head>
   <body>
   <div class="container">
-    <h1>d.light <small>DEMO</small></h1>
-    <row>
-      <input id="dimmer" type="range" name="dimmer" min="0" max="100" value="100" style="height:100px" />
-      <input class="btn btn-danger" id="btnoff" type="button" value="Turn Off" />
-      <input class="btn btn-success" id="btnon" type="button" value="Turn On" />
-    </row>
+    <div class="row">
+      <div class="col-xs-12">
+        <h1><img src="icon.png" height=38 width=38 style="vertical-align:top" />d.light</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <input id="dimmer" type="range" name="dimmer" min="0" max="100" value="100" /><br>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <input class="btn btn-lg btn-danger" id="btnoff" type="button" value="Turn Off" style="display:none" />
+        <input class="btn btn-lg btn-success" id="btnon" type="button" value="Turn On" style="display:none" />
+      </div>
+    </div>
   </div>
   </body>
 </html>

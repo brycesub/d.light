@@ -90,7 +90,7 @@ def web(dummy,state):
   def servfile(filepath):
     return static_file(filepath,wwwroot)
 
-  run(host='0.0.0.0',port=config.wwwport)
+  run(host='0.0.0.0',port=config.wwwport,server='cherrypy')
 
 if __name__ == '__main__':
   from time import sleep
