@@ -31,7 +31,7 @@ $(document).ready(function(){
 
   syncstate();
 
-  $("#dimmer").on("change",function(){
+  $("#dimmer").change(function(){
     $.get("/dim/"+$(this).val(), function(){ syncstate(); } );
   });
 
@@ -51,16 +51,16 @@ $(document).ready(function(){
     $.get("/alarm/off", function(){ syncstate(); } );
   });
 
-  $("#btnsetalarm").click(function(){
-    $.get("/alarmset/"+$("#inalarmtime").val(), function(){ syncstate(); } );
+  $("#inalarmtime").change(function(){
+    $.get("/alarmset/"+$(this).val(), function(){ syncstate(); } );
   });
 
-  $("#btnsetsnooze").click(function(){
-    $.get("/snoozeset/"+$("#insnoozetime").val(), function(){ syncstate(); } );
+  $("#insnoozetime").change(function(){
+    $.get("/snoozeset/"+$(this).val(), function(){ syncstate(); } );
   });
 
   $("#btnsnooze").click(function(){
-    $.get("/snooze"), function(){ syncstate(); } );
+    $.get("/snooze", function(){ syncstate(); } );
   });
 
   $("#btnalarmoff").click(function(){
