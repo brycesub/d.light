@@ -105,6 +105,11 @@ def web(dummy,state):
     state['snoozetime'] = float(t)
     return dict(state)
 
+  @route('/brightenset/<t:int>')
+  def brightenset(t):
+    state['brightentime'] = float(t)
+    return dict(state)
+
   @route('/dim/<dimval:int>')
   def dim(dimval):
     state['on'] = True
@@ -139,7 +144,7 @@ if __name__ == '__main__':
   state['on'] = False
   state['dim'] = 0.
   state['snoozetime'] = config.snoozetime
-  state['wakeuptime'] = config.wakeuptime
+  state['brightentime'] = config.brightentime
   state['alarmset'] = True
   state['alarmtime'] = config.alarmtime
   state['alarming'] = False

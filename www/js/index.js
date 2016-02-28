@@ -24,6 +24,7 @@ function syncstate(){
     $("#dimmer").val(state.dim);
     $("#insnoozetime").val(state.snoozetime);
     $("#inalarmtime").val(state.alarmtime);
+    $("#inbrightentime").val(state.brightentime);
   });
 }
 
@@ -57,6 +58,10 @@ $(document).ready(function(){
 
   $("#insnoozetime").change(function(){
     $.get("/snoozeset/"+$(this).val(), function(){ syncstate(); } );
+  });
+
+  $("#inbrightentime").change(function(){
+    $.get("/brightenset/"+$(this).val(), function(){ syncstate(); } );
   });
 
   $("#btnsnooze").click(function(){

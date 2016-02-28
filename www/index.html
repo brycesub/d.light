@@ -28,14 +28,14 @@
     </div>
     <div class="row">
       <div class="col-xs-4">
-        <input class="btn btn-lg btn-danger" id="btnoff" type="button" value="Light Off" style="display:none;width:200px" />
-        <input class="btn btn-lg btn-success" id="btnon" type="button" value="Light On" style="display:none;width:200px" />
+        <input class="btn btn-lg btn-danger" id="btnoff" type="button" value="Light Off" style="display:none" />
+        <input class="btn btn-lg btn-success" id="btnon" type="button" value="Light On" style="display:none" />
       </div>
       <div class="col-xs-4">
-        <input class="btn btn-lg btn-warning" id="btnsnooze" type="button" value="Snooze" style="display:none;width:300px" />
+        <input class="btn btn-lg btn-warning" id="btnsnooze" type="button" value="Snooze" style="display:none" />
       </div>
       <div class="col-xs-4">
-        <input class="btn btn-lg btn-danger" id="btnalarmoff" type="button" value="Alarm Off" style="display:none;width:300px" />
+        <input class="btn btn-lg btn-danger" id="btnalarmoff" type="button" value="Alarm Off" style="display:none" />
       </div>
     </div>
     <hr>
@@ -48,10 +48,19 @@
       </div>
       <div class="col-xs-3">
         <form class="form-inline" onsubmit="return false">
-          <label for="insnoozetime">Snooze for: </label>
+          <label for="insnoozetime">Snooze: </label>
           <input type="number" min="1" max="15" class="form-control" id="insnoozetime" style="width:70px">
         </form>
       </div>
+      <div class="col-xs-3">
+        <form class="form-inline" onsubmit="return false">
+          <label for="inbrightentime">Brighten: </label>
+          <input type="number" min="1" max="30" class="form-control" id="inbrightentime" style="width:70px">
+        </form>
+      </div>
+    </div>
+    <br>
+    <div class="row">
       <div class="col-xs-3">
         <input class="btn btn-success" id="btnalarmenable" type="button" value="Enable Alarm" style="display:none" />
         <input class="btn btn-danger" id="btnalarmdisable" type="button" value="Disable Alarm" style="display:none" />
