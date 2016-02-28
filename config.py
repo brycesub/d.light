@@ -7,7 +7,7 @@ p32 = 16
 p64 = 20
 p128 = 21
 
-dimlow = 35
+dimlow = 33
 dimhigh = 255
 dimrange = dimhigh-dimlow
 

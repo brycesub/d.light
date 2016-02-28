@@ -66,7 +66,6 @@ def web(dummy,state,wake,kill):
 
   @route('/on')
   def light():
-    state['dim'] = 100
     state['on'] = True
     return dict(state)
 
