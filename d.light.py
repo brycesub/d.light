@@ -2,7 +2,7 @@
 import config
 from multiprocessing import Process, Manager, Event
 
-def light(dummy,state,wake,kill):
+def light(dummy,state):
   import RPi.GPIO as GPIO
   import time
 
@@ -54,7 +54,7 @@ def light(dummy,state,wake,kill):
   finally:
     GPIO.cleanup()
 
-def web(dummy,state,wake,kill):
+def web(dummy,state):
   from bottle import route, run, get, post, request, static_file, abort
   import os
 
@@ -66,11 +66,13 @@ def web(dummy,state,wake,kill):
 
   @route('/on')
   def light():
+    state['dim'] = 100.
     state['on'] = True
     return dict(state)
 
   @route('/off')
   def off():
+    state['dim'] = 0.
     state['on'] = False
     return dict(state)
 
@@ -95,18 +97,16 @@ if __name__ == '__main__':
 
   manager = Manager()
   state = manager.dict()
-  kill = Event()
-  wake = Event()
   state['waketime'] = config.waketime
   state['snoozetime'] = config.snoozetime
   state['on'] = False
   state['dim'] = 0.
 
-  l = Process(target=light,args=(1,state,wake,kill))
+  l = Process(target=light,args=(1,state))
   l.daemon = True
   l.start()
 
-  w = Process(target=web,args=(1,state,wake,kill))
+  w = Process(target=web,args=(1,state))
   w.daemon = True
   w.start()
 
