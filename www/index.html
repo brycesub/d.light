@@ -18,18 +18,45 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
-        <h1><img src="icon.png" height=38 width=38 style="vertical-align:top" />d.light</h1>
+        <h1><img src="icon.png" height=35 width=35 style="vertical-align:top" />d.light</h1>
       </div>
     </div>
     <div class="row">
       <div class="col-xs-12">
-        <input id="dimmer" type="range" name="dimmer" min="0" max="100" value="100" /><br>
+        <input id="dimmer" type="range" name="dimmer" min="0" max="100" value="0" /><br>
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-12">
-        <input class="btn btn-lg btn-danger" id="btnoff" type="button" value="Turn Off" style="display:none" />
-        <input class="btn btn-lg btn-success" id="btnon" type="button" value="Turn On" style="display:none" />
+      <div class="col-xs-4">
+        <input class="btn btn-lg btn-danger" id="btnoff" type="button" value="Light Off" style="display:none;width:200px" />
+        <input class="btn btn-lg btn-success" id="btnon" type="button" value="Light On" style="display:none;width:200px" />
+      </div>
+      <div class="col-xs-4">
+        <input class="btn btn-lg btn-warning" id="btnsnooze" type="button" value="Snooze" style="display:none;width:300px" />
+      </div>
+      <div class="col-xs-4">
+        <input class="btn btn-lg btn-danger" id="btnalarmoff" type="button" value="Alarm Off" style="display:none;width:300px" />
+      </div>
+    </div>
+    <hr>
+    <div class="row alarm">
+      <div class="col-xs-5">
+        <form class="form-inline" onsubmit="return false">
+          <label for="inalarmtime">Alarm: </label>
+          <input type="time" class="form-control" id="inalarmtime" style="width:125px">
+          <button id="btnsetalarm" class="btn btn-primary">Set</button>
+        </form>
+      </div>
+      <div class="col-xs-4">
+        <form class="form-inline" onsubmit="return false">
+          <label for="insnoozetime">Snooze for: </label>
+          <input type="number" min="1" max="15" class="form-control" id="insnoozetime" style="width:70px">
+          <button id="btnsetsnooze" class="btn btn-primary">Set</button>
+        </form>
+      </div>
+      <div class="col-xs-3">
+        <input class="btn btn-success" id="btnalarmenable" type="button" value="Enable Alarm" style="display:none" />
+        <input class="btn btn-danger" id="btnalarmdisable" type="button" value="Disable Alarm" style="display:none" />
       </div>
     </div>
   </div>

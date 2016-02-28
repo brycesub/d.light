@@ -2,6 +2,13 @@
 import config
 from multiprocessing import Process, Manager, Event
 
+def scheduler(dummy,state,esnooze,ealarmoff):
+  import time
+  from datetime import datetime, timedelta
+
+  while True:
+    time.sleep(1)
+
 def light(dummy,state):
   import RPi.GPIO as GPIO
   import time
@@ -64,22 +71,54 @@ def web(dummy,state):
   def docroot():
     return static_file('index.html',wwwroot)
 
-  @route('/on')
-  def light():
-    state['dim'] = 100.
-    state['on'] = True
+  @route('/light/<sw>')
+  def light(sw):
+    if sw == "on":
+      state['dim'] = 100.
+      state['on'] = True
+      return dict(state)
+    elif sw == "off":
+      state['dim'] = 0.
+      state['on'] = False
+      return dict(state)
+    else:
+      return false
+
+  @route('/alarm/<sw>')
+  def alarm(sw):
+    if sw == 'on':
+      state['alarmset'] = True
+      return dict(state)
+    elif sw == 'off':
+      state['alarmset'] = False
+      return dict(state)
+    else:
+      return false
+
+  @route('/alarmset/<t>')
+  def alarmset(t):
+    state['alarmtime'] = t
     return dict(state)
 
-  @route('/off')
-  def off():
-    state['dim'] = 0.
-    state['on'] = False
+  @route('/snoozeset/<t:int>')
+  def snoozeset(t):
+    state['snoozetime'] = float(t)
     return dict(state)
 
-  @route('/dim/<dimval>')
+  @route('/dim/<dimval:int>')
   def dim(dimval):
     state['on'] = True
     state['dim'] = float(dimval)
+    return dict(state)
+
+  @route('/snooze')
+  def snooze():
+    #TODO
+    return dict(state)
+
+  @route('/alarmoff')
+  def alarmoff():
+    #TODO
     return dict(state)
 
   @route('/stat')
@@ -97,10 +136,13 @@ if __name__ == '__main__':
 
   manager = Manager()
   state = manager.dict()
-  state['waketime'] = config.waketime
-  state['snoozetime'] = config.snoozetime
   state['on'] = False
   state['dim'] = 0.
+  state['snoozetime'] = config.snoozetime
+  state['wakeuptime'] = config.wakeuptime
+  state['alarmset'] = True
+  state['alarmtime'] = config.alarmtime
+  state['alarming'] = False
 
   l = Process(target=light,args=(1,state))
   l.daemon = True
@@ -110,6 +152,12 @@ if __name__ == '__main__':
   w.daemon = True
   w.start()
 
-  while l.is_alive() == True and w.is_alive() == True:
+  esnooze = Event()
+  ealarmoff = Event()
+  s = Process(target=scheduler,args=(1,state,esnooze,ealarmoff))
+  s.daemon = True
+  s.start()
+
+  while l.is_alive() and w.is_alive() and s.is_alive():
     sleep(1)
 
