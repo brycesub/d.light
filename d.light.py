@@ -2,11 +2,31 @@
 import config
 from multiprocessing import Process, Manager, Event
 
-def scheduler(dummy,state,esnooze,ealarmoff):
+def scheduler(dummy,state,esnooze):
   import time
   from datetime import datetime, timedelta
 
   while True:
+    now = datetime.now()
+    at = datetime.strptime(state['alarmtime'],'%H:%M')-timedelta(minutes=state['brightentime'])
+    if at.hour == now.hour and at.minute == now.minute and state['alarmset']:
+      esnooze.clear()
+      state['alarming'] = True
+      i = int(config.dimlow)
+      while state['alarming']:
+        state['on'] = True
+        state['dim'] = (float(i)-config.dimlow)/config.dimrange*100
+        esnooze.wait(state['brightentime']*60./float(config.dimrange))
+        if i < config.dimhigh:
+          i=i+1 
+        if esnooze.is_set():
+          state['on'] = False
+          state['dim'] = 0
+          i=int(config.dimlow)
+          esnooze.clear()
+          if state['alarming']:
+            esnooze.wait(state['snoozetime']*60)
+
     time.sleep(1)
 
 def light(dummy,state):
@@ -61,8 +81,9 @@ def light(dummy,state):
   finally:
     GPIO.cleanup()
 
-def web(dummy,state):
+def web(dummy,state,esnooze):
   from bottle import route, run, get, post, request, static_file, abort
+  import time
   import os
 
   wwwroot = os.path.dirname(__file__)+'/www'
@@ -91,6 +112,9 @@ def web(dummy,state):
       return dict(state)
     elif sw == 'off':
       state['alarmset'] = False
+      state['alarming'] = False
+      state['dim'] = 0
+      esnooze.set()
       return dict(state)
     else:
       return false
@@ -118,12 +142,16 @@ def web(dummy,state):
 
   @route('/snooze')
   def snooze():
-    #TODO
+    esnooze.set()
     return dict(state)
 
   @route('/alarmoff')
   def alarmoff():
-    #TODO
+    state['alarming'] = False
+    esnooze.set()
+    time.sleep(.5)
+    state['dim'] = 100
+    state['on'] = True
     return dict(state)
 
   @route('/stat')
@@ -148,18 +176,17 @@ if __name__ == '__main__':
   state['alarmset'] = True
   state['alarmtime'] = config.alarmtime
   state['alarming'] = False
+  esnooze = Event()
 
   l = Process(target=light,args=(1,state))
   l.daemon = True
   l.start()
 
-  w = Process(target=web,args=(1,state))
+  w = Process(target=web,args=(1,state,esnooze))
   w.daemon = True
   w.start()
 
-  esnooze = Event()
-  ealarmoff = Event()
-  s = Process(target=scheduler,args=(1,state,esnooze,ealarmoff))
+  s = Process(target=scheduler,args=(1,state,esnooze))
   s.daemon = True
   s.start()
 
