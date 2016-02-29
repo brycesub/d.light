@@ -1,3 +1,5 @@
+var idletime = 0;
+
 function syncstate(){
   $.getJSON("/stat", function(state){
     if (state.on == true) {
@@ -26,6 +28,17 @@ function syncstate(){
     $("#inalarmtime").val(state.alarmtime);
     $("#inbrightentime").val(state.brightentime);
   });
+}
+
+function resettimer() {
+  idletime = 0;
+}
+
+function idling() {
+  if (idletime > 5000) {
+    syncstate();
+  }
+  idletime = idletime + 500;
 }
 
 $(document).ready(function(){
@@ -71,4 +84,12 @@ $(document).ready(function(){
   $("#btnalarmoff").click(function(){
     $.get("/alarmoff", function(){ syncstate(); } );
   });
+
+  resettimer();
+  $(this).mousemove(resettimer);
+  $(this).keypress(resettimer);
+  $(document).focus(syncstate);
+  $(document).click(syncstate);
+
+  setInterval(idling,500);
 });
