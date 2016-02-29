@@ -8,11 +8,11 @@ p64 = 20
 p128 = 21
 
 dimlow = 33
-dimhigh = 255
+dimhigh = 200
 dimrange = dimhigh-dimlow
 
 wwwport = 80
 
 alarmtime = "07:00"
-brightentime = 5.
+brightentime = 30.
 snoozetime = 5.
