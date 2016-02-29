@@ -56,7 +56,15 @@ def light(dummy,state):
   try:
     while True:
       if state['on'] == True:
-        dim = int(state['dim']/100.*config.dimrange+config.dimlow)
+
+        if state['dim'] == 0:
+          dim = 0
+          state['on'] = False
+        elif state['dim'] == 100:
+          dim = 255
+        else:
+          dim = int(state['dim']/100.*config.dimrange+config.dimlow)
+
         GPIO.output(p1,not dim&1)
         GPIO.output(p2,not dim&2)
         GPIO.output(p4,not dim&4)
