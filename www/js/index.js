@@ -1,6 +1,6 @@
 var idletime = 0;
 
-function syncstate(){
+function syncstate() {
   $.getJSON("/stat", function(state){
     if (state.on == true) {
       $("#btnon").hide();
@@ -41,7 +41,7 @@ function idling() {
   idletime = idletime + 500;
 }
 
-$(document).ready(function(){
+$(document).ready(function() {
 
   syncstate();
 
