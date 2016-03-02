@@ -93,7 +93,7 @@ def web(dummy,state,esnooze):
   from bottle import route, run, get, post, request, static_file, abort
   import time
   import os
-  import datetime
+  from datetime import datetime
 
   wwwroot = os.path.dirname(__file__)+'/www'
 
@@ -127,7 +127,7 @@ def web(dummy,state,esnooze):
       state['alarmset'] = False
       return dict(state)
     else:
-      return false
+      abort(400,'Invalid alarm setting.')
 
   @route('/alarmset/<t>')
   def alarmset(t):
@@ -163,7 +163,6 @@ def web(dummy,state,esnooze):
   def alarmoff():
     state['alarming'] = False
     esnooze.set()
-    time.sleep(.5)
     state['dim'] = 100
     state['on'] = True
     return dict(state)
