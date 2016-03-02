@@ -9,7 +9,7 @@ def scheduler(dummy,state,esnooze):
   while True:
     now = datetime.now()
     at = datetime.strptime(state['alarmtime'],'%H:%M')-timedelta(minutes=state['brightentime'])
-    if at.hour == now.hour and at.minute == now.minute and state['alarmset']:
+    if at.hour == now.hour and at.minute == now.minute and now.second <= 2 and state['alarmset']:
       esnooze.clear()
       state['alarming'] = True
       i = int(config.dimlow)
@@ -20,11 +20,11 @@ def scheduler(dummy,state,esnooze):
         if i < config.dimhigh:
           i=i+1 
         if esnooze.is_set():
-          state['on'] = False
-          state['dim'] = 0
           i=int(config.dimlow)
           esnooze.clear()
           if state['alarming']:
+            state['on'] = False
+            state['dim'] = 0
             esnooze.wait(state['snoozetime']*60)
 
     time.sleep(1)
