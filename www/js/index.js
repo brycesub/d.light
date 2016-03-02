@@ -35,7 +35,7 @@ function resettimer() {
 }
 
 function idling() {
-  if (idletime > 5000) {
+  if (idletime > 10000) {
     syncstate();
   }
   idletime = idletime + 500;
@@ -88,8 +88,6 @@ $(document).ready(function() {
   resettimer();
   $(this).mousemove(resettimer);
   $(this).keypress(resettimer);
-  $(document).focus(syncstate);
-  $(document).click(syncstate);
 
   setInterval(idling,500);
 });
