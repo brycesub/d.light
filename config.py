@@ -14,5 +14,5 @@ dimrange = dimhigh-dimlow
 wwwport = 80
 
 alarmtime = "07:00"
-brightentime = 30.
+brightentime = 15.
 snoozetime = 5.
