@@ -10,23 +10,24 @@ def scheduler(dummy,state,esnooze):
     now = datetime.now()
     at = datetime.strptime(state['alarmtime'],'%H:%M')-timedelta(minutes=state['brightentime'])
     if at.hour == now.hour and at.minute == now.minute and now.second <= 2 and state['alarmset']:
-      esnooze.clear()
       state['alarming'] = True
       i = int(config.dimlow)
-      while state['alarming']:
-        state['on'] = True
-        state['dim'] = (float(i)-config.dimlow)/config.dimrange*100
-        esnooze.wait(state['brightentime']*60./float(config.dimrange))
-        if i < config.dimhigh:
-          i=i+1 
+      while state['alarming'] and state['alarmset']:
         if esnooze.is_set():
           i=int(config.dimlow)
           esnooze.clear()
           if state['alarming']:
-            state['on'] = False
             state['dim'] = 0
+            state['on'] = False
             esnooze.wait(state['snoozetime']*60)
-
+          if state['alarming'] == False:
+            esnooze.clear()
+            break
+        state['dim'] = (float(i)-config.dimlow)/config.dimrange*100
+        state['on'] = True
+        esnooze.wait(state['brightentime']*60./float(config.dimrange))
+        if i < config.dimhigh:
+          i=i+1
     time.sleep(1)
 
 def light(dummy,state):
@@ -108,6 +109,7 @@ def web(dummy,state,esnooze):
       state['on'] = True
       return dict(state)
     elif sw == "off":
+      state['alarming'] = False
       state['dim'] = 0.
       state['on'] = False
       return dict(state)
