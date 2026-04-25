@@ -36,7 +36,7 @@ mypy .
 
 - **`scheduler()`** — monitors wall time and triggers gradual brightening at `alarmtime - brightentime`. Handles snooze via a `threading.Event` (`esnooze`).
 - **`light()`** — reads `state.dim` every 100ms and writes to 8 GPIO pins using binary encoding (bit 0 → pin p1, bit 1 → pin p2, …, bit 7 → pin p128), giving 256 brightness levels. Pins are active-low.
-- **`web()`** — returns a configured `Bottle` app serving the REST API and static files from `www/`.
+- **`web()`** — returns a configured `FastAPI` app serving the REST API and static files from `www/`. Runs inside a daemon thread via `uvicorn.run()`.
 
 ### Key files
 
@@ -55,6 +55,6 @@ mypy .
 
 `create_gpio()` returns `RealGPIO` when `RPi.GPIO` is importable (Raspberry Pi), otherwise `MockGPIO`. Tests always use `MockGPIO`. `MockGPIO.get_state()` exposes pin values for test assertions.
 
-### In-progress migration
+### Frontend
 
-`d_light.py` currently uses **Bottle** for the web layer, but `pyproject.toml` lists **FastAPI/uvicorn** as the declared dependencies. The migration from Bottle to FastAPI is not yet complete.
+Static files live in `www/`. The UI uses **Bootstrap 5** (CSS only — no Bootstrap JS required) and vanilla JS (`fetch` + `addEventListener`). No build step; files are served directly by FastAPI's `StaticFiles` mount.
