@@ -1,5 +1,2 @@
-bottle
-cheroot
-RPi.GPIO
-spidev
-schedule
+bottle>=0.12.25
+cheroot>=10.0
