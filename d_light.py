@@ -10,7 +10,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from bottle import Bottle, abort, static_file
+import uvicorn
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from config import AppConfig
 from hardware import GPIOInterface, MockGPIO, create_gpio
@@ -130,16 +133,16 @@ def light(state: LightState, gpio: GPIOInterface, config: AppConfig) -> None:
         gpio.cleanup()
 
 
-def web(state: LightState, esnooze: threading.Event, config: AppConfig) -> Bottle:
-    """Bottle web application serving the UI and REST API."""
-    app = Bottle()
+def web(state: LightState, esnooze: threading.Event, config: AppConfig) -> FastAPI:
+    """FastAPI web application serving the UI and REST API."""
+    app = FastAPI()
 
-    @app.route("/")
-    def docroot() -> Any:
+    @app.get("/")
+    def docroot() -> FileResponse:
         """Serve the main index.html file."""
-        return static_file("index.html", root=str(WWW_ROOT))
+        return FileResponse(WWW_ROOT / "index.html")
 
-    @app.route("/light/<sw>")
+    @app.get("/light/{sw}")
     def light_endpoint(sw: str) -> dict[str, Any]:
         if sw == "on":
             state.update(dim=100.0, on=True)
@@ -147,10 +150,9 @@ def web(state: LightState, esnooze: threading.Event, config: AppConfig) -> Bottl
         if sw == "off":
             state.update(alarming=False, dim=0.0, on=False)
             return state.to_dict()
-        abort(400, "Invalid light setting.")
-        return {}  # pragma: no cover
+        raise HTTPException(status_code=400, detail="Invalid light setting.")
 
-    @app.route("/alarm/<sw>")
+    @app.get("/alarm/{sw}")
     def alarm_endpoint(sw: str) -> dict[str, Any]:
         if sw == "on":
             state.update(alarmset=True)
@@ -161,53 +163,49 @@ def web(state: LightState, esnooze: threading.Event, config: AppConfig) -> Bottl
                 esnooze.set()
             state.update(alarmset=False)
             return state.to_dict()
-        abort(400, "Invalid alarm setting.")
-        return {}  # pragma: no cover
+        raise HTTPException(status_code=400, detail="Invalid alarm setting.")
 
-    @app.route("/alarmset/<t>")
+    @app.get("/alarmset/{t}")
     def alarmset_endpoint(t: str) -> dict[str, Any]:
         try:
             datetime.strptime(t, "%H:%M")
         except ValueError:
-            abort(400, "Invalid time format.")
+            raise HTTPException(status_code=400, detail="Invalid time format.") from None
         state.update(alarmtime=t)
         return state.to_dict()
 
-    @app.route("/snoozeset/<t:int>")
+    @app.get("/snoozeset/{t}")
     def snoozeset_endpoint(t: int) -> dict[str, Any]:
         state.update(snoozetime=float(t))
         return state.to_dict()
 
-    @app.route("/brightenset/<t:int>")
+    @app.get("/brightenset/{t}")
     def brightenset_endpoint(t: int) -> dict[str, Any]:
         state.update(brightentime=float(t))
         return state.to_dict()
 
-    @app.route("/dim/<dimval:int>")
+    @app.get("/dim/{dimval}")
     def dim_endpoint(dimval: int) -> dict[str, Any]:
         state.update(on=True, dim=float(dimval))
         return state.to_dict()
 
-    @app.route("/snooze")
+    @app.get("/snooze")
     def snooze_endpoint() -> dict[str, Any]:
         esnooze.set()
         return state.to_dict()
 
-    @app.route("/alarmoff")
+    @app.get("/alarmoff")
     def alarmoff_endpoint() -> dict[str, Any]:
         state.update(alarming=False)
         esnooze.set()
         state.update(dim=100, on=True)
         return state.to_dict()
 
-    @app.route("/stat")
+    @app.get("/stat")
     def stat_endpoint() -> dict[str, Any]:
         return state.to_dict()
 
-    @app.route("/<filepath:path>")
-    def servfile(filepath: str) -> Any:
-        """Serve static files from the www directory."""
-        return static_file(filepath, root=str(WWW_ROOT))
+    app.mount("/", StaticFiles(directory=str(WWW_ROOT)), name="static")
 
     return app
 
@@ -233,8 +231,10 @@ def main() -> None:
     threads: list[threading.Thread] = [
         threading.Thread(target=light, args=(state, gpio, config), name="light", daemon=True),
         threading.Thread(
-            target=app.run, kwargs={"host": config.web.host, "port": config.web.wwwport},
-            name="web", daemon=True
+            target=uvicorn.run,
+            kwargs={"app": app, "host": config.web.host, "port": config.web.wwwport},
+            name="web",
+            daemon=True,
         ),
         threading.Thread(
             target=scheduler, args=(state, esnooze, config), name="scheduler", daemon=True
