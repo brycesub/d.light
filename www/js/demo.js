@@ -1,23 +1,14 @@
-var dim = 0;
-var dir = 1;
+let dim = 0;
+let dir = 1;
 
 function demo() {
-  if (dir > 0) {
-    dim = dim+1;
-  } else {
-    dim = dim-1;
-  }
-
-  if (dim == 0) {
-    dir = 1;
-  }
-  if (dim == 100) {
-    dir = -1;
-  }
-  $("#demodim").html(dim);
-  $.get("/dim/"+dim );
+  dim += dir;
+  if (dim === 0) dir = 1;
+  if (dim === 100) dir = -1;
+  document.getElementById('demodim').textContent = dim;
+  fetch('/dim/' + dim);
 }
 
-$(document).ready(function() {
-  setInterval(demo,100);
+document.addEventListener('DOMContentLoaded', () => {
+  setInterval(demo, 100);
 });

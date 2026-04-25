@@ -1,5 +1,0 @@
-bottle
-cheroot
-RPi.GPIO
-spidev
-schedule
