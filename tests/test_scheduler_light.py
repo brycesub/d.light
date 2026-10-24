@@ -164,11 +164,26 @@ class TestLightThread:
             state.update(on=False)
         assert state.on is False
 
-    def test_dim_100_is_max(self, config: AppConfig) -> None:
+    def test_dim_100_drives_dimhigh_not_255(self, config: AppConfig, mock_gpio: MockGPIO) -> None:
+        # 100% must drive dimhigh, not full 255: the LED driver cuts out at full output.
         state = LightState(on=True, dim=100.0)
-        if state.dim == 100:
-            dim = 255
-        assert dim == 255
+        captured_state: dict[int, bool] = {}
+
+        def fake_sleep(duration: float) -> None:
+            captured_state.update(mock_gpio.get_state())
+            raise RuntimeError("stop")
+
+        with (
+            patch("d_light.time.sleep", side_effect=fake_sleep),
+            pytest.raises(RuntimeError, match="stop"),
+        ):
+            light(state, mock_gpio, config)
+
+        pins = config.pins
+        bits = [pins.p1, pins.p2, pins.p4, pins.p8, pins.p16, pins.p32, pins.p64, pins.p128]
+        # Pins are active-low: a LOW (False) pin means that bit is set.
+        level = sum(1 << i for i, p in enumerate(bits) if not captured_state[p])
+        assert level == config.dim.dimhigh
 
     def test_light_thread_runs_and_cleans_up(self, config: AppConfig, mock_gpio: MockGPIO) -> None:
         state = LightState(on=True, dim=100.0)
