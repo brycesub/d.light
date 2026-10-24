@@ -23,7 +23,7 @@ class TestDimConfig:
 
     def test_default_dimrange(self) -> None:
         cfg = DimConfig()
-        assert cfg.dimrange == 180
+        assert cfg.dimrange == 187
 
 
 class TestAlarmConfig:
