@@ -109,8 +109,6 @@ def light(state: LightState, gpio: GPIOInterface, config: AppConfig) -> None:
                 if state.dim == 0:
                     dim = 0
                     state.update(on=False)
-                elif state.dim == 100:
-                    dim = 255
                 else:
                     dim = int(state.dim / 100.0 * config.dim.dimrange + config.dim.dimlow)
 

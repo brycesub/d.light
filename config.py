@@ -28,8 +28,8 @@ class PinConfig:
 class DimConfig:
     """Dimming range configuration."""
 
-    dimlow: int = 55  # tuned for the LED bulb (incandescent: 33)
-    dimhigh: int = 170  # tuned for the LED bulb (incandescent: 200)
+    dimlow: int = 48  # current LED bulb: steady glow from 44, flickers at 43 (incandescent: 33)
+    dimhigh: int = 235  # current LED bulb turns off at >= 238 (incandescent: 200)
 
     @property
     def dimrange(self) -> int:
