@@ -23,13 +23,13 @@ class TestDimConfig:
 
     def test_default_dimrange(self) -> None:
         cfg = DimConfig()
-        assert cfg.dimrange == 167
+        assert cfg.dimrange == 115
 
 
 class TestAlarmConfig:
     def test_defaults(self) -> None:
         cfg = AlarmConfig()
-        assert cfg.alarmtime == "07:00"
+        assert cfg.alarmtime == "08:00"
         assert cfg.brightentime == 15.0
         assert cfg.snoozetime == 5.0
 
@@ -37,7 +37,7 @@ class TestAlarmConfig:
 class TestWebConfig:
     def test_defaults(self) -> None:
         cfg = WebConfig()
-        assert cfg.wwwport == 8080
+        assert cfg.wwwport == 80
         assert cfg.host == "0.0.0.0"
 
 

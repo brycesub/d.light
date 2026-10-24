@@ -1,0 +1,43 @@
+[Unit]
+Description=d.light wake-up light
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=dlight
+Group=dlight
+SupplementaryGroups=gpio
+WorkingDirectory=/opt/d.light
+ExecStart=/opt/d.light/.venv/bin/python /opt/d.light/d_light.py
+Restart=always
+RestartSec=2
+
+# lgpio writes its notification FIFOs to $LG_WD (defaults to the cwd, which is read-only here)
+RuntimeDirectory=d-light
+Environment=LG_WD=/run/d-light
+
+# Bind port 80 without running as root
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

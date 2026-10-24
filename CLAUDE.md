@@ -14,6 +14,9 @@ pip install -e ".[pi]"
 # Run the application
 d-light
 
+# Audit pinned dependencies for known CVEs
+pip-audit -r requirements.txt
+
 # Run all tests (includes coverage reporting, 70% minimum enforced)
 pytest
 
@@ -57,4 +60,4 @@ mypy .
 
 ### Frontend
 
-Static files live in `www/`. The UI uses **Bootstrap 5** (CSS only — no Bootstrap JS required) and vanilla JS (`fetch` + `addEventListener`). No build step; files are served directly by FastAPI's `StaticFiles` mount.
+Static files live in `www/`. The UI uses **Bootstrap 3.4.1** CSS plus `bootstrap-theme.css` (kept deliberately for the original look — no Bootstrap JS or jQuery, so none of the BS3 JS CVEs apply) and vanilla JS (`fetch` + `addEventListener`). `style.css` holds the custom range-slider styling. No build step; files are served directly by FastAPI's `StaticFiles` mount.
