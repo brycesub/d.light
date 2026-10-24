@@ -154,9 +154,9 @@ class TestLightThread:
     def test_dim_calculation(self, config: AppConfig) -> None:
         state = LightState(on=True, dim=50.0)
         dim = int(state.dim / 100.0 * config.dim.dimrange + config.dim.dimlow)
-        expected = int(50.0 / 100.0 * 146 + 55)
+        expected = int(50.0 / 100.0 * 180 + 55)
         assert dim == expected
-        assert dim == 128
+        assert dim == 145
 
     def test_dim_zero_turns_off(self, config: AppConfig) -> None:
         state = LightState(on=True, dim=0.0)

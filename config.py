@@ -29,7 +29,7 @@ class DimConfig:
     """Dimming range configuration."""
 
     dimlow: int = 55  # tuned for the LED bulb (incandescent: 33)
-    dimhigh: int = 201  # LED driver flickers at >= 204 (incandescent: 200)
+    dimhigh: int = 235  # current LED bulb turns off at >= 238 (incandescent: 200)
 
     @property
     def dimrange(self) -> int:
