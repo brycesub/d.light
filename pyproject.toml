@@ -21,13 +21,17 @@ classifiers = [
     "Topic :: Home Automation",
 ]
 dependencies = [
-    "fastapi>=0.110",
-    "uvicorn[standard]>=0.29",
+    "fastapi>=0.135",
+    # Floors below are security minimums; fastapi alone still allows vulnerable versions.
+    "starlette>=1.3.1",
+    "uvicorn>=0.54",
+    "h11>=0.16.0",
 ]
 
 [project.optional-dependencies]
 pi = [
-    "RPi.GPIO>=0.7.1; platform_machine == 'armv7l' or platform_machine == 'aarch64'",
+    # Drop-in replacement for the unmaintained RPi.GPIO (still imported as RPi.GPIO).
+    "rpi-lgpio>=0.6; platform_machine == 'armv7l' or platform_machine == 'aarch64'",
 ]
 dev = [
     "pytest>=8.0",
@@ -36,6 +40,7 @@ dev = [
     "httpx>=0.27",
     "ruff>=0.6.0",
     "mypy>=1.10",
+    "pip-audit>=2.7",
 ]
 
 [project.scripts]

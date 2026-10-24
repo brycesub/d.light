@@ -22,13 +22,28 @@ pip install -e ".[pi]"
 pip install -e ".[dev]"
 ```
 
+## Deploy on a Raspberry Pi
+
+Runs as an unprivileged `dlight` user via systemd (see `deploy/d-light.service`), using the
+distro's `python3-rpi-lgpio` for GPIO and hash-pinned dependencies from `requirements.txt`:
+
+```bash
+sudo apt install python3-venv python3-rpi-lgpio
+sudo useradd --system --groups gpio --home-dir /opt/d.light --shell /usr/sbin/nologin dlight
+sudo git clone https://github.com/brycesub/d.light /opt/d.light
+sudo python3 -m venv --system-site-packages /opt/d.light/.venv
+sudo /opt/d.light/.venv/bin/pip install --require-hashes -r /opt/d.light/requirements.txt
+sudo cp /opt/d.light/deploy/d-light.service /etc/systemd/system/
+sudo systemctl enable --now d-light
+```
+
 ## Run
 
 ```bash
 d-light
 ```
 
-The web UI is available at `http://<host>:8080/`.
+The web UI is available at `http://<host>/` (port 80).
 
 ## API
 
@@ -52,7 +67,14 @@ All endpoints return the current state as JSON.
 
 ```bash
 pytest          # run tests (70% coverage required)
+pip-audit -r requirements.txt  # check pinned deps for known CVEs
 ruff check .    # lint
 ruff format .   # format
 mypy .          # type check
+```
+
+To refresh the pinned dependencies, edit the floors in `pyproject.toml` and regenerate:
+
+```bash
+uv pip compile pyproject.toml --universal --python-version 3.10 --generate-hashes -o requirements.txt
 ```

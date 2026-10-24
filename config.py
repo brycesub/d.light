@@ -28,8 +28,8 @@ class PinConfig:
 class DimConfig:
     """Dimming range configuration."""
 
-    dimlow: int = 33
-    dimhigh: int = 200
+    dimlow: int = 55  # tuned for the LED bulb (incandescent: 33)
+    dimhigh: int = 170  # tuned for the LED bulb (incandescent: 200)
 
     @property
     def dimrange(self) -> int:
@@ -41,7 +41,7 @@ class DimConfig:
 class AlarmConfig:
     """Alarm timing defaults."""
 
-    alarmtime: str = "07:00"
+    alarmtime: str = "08:00"
     brightentime: float = 15.0
     snoozetime: float = 5.0
 
@@ -50,7 +50,7 @@ class AlarmConfig:
 class WebConfig:
     """Web server configuration."""
 
-    wwwport: int = 8080
+    wwwport: int = 80
     host: str = "0.0.0.0"
 
 
